@@ -1,0 +1,69 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col shadow bg-card">
+
+        <!-- Cover image -->
+        <!-- <div>
+            <img
+                class="h-40 lg:h-80 object-cover"
+                src="assets/images/pages/profile/cover.jpg"
+                alt="Cover image">
+        </div> -->
+
+        <!-- User info -->
+        <div class="flex flex-col flex-0 lg:flex-row items-center max-w-5xl w-full mx-auto px-8 h-auto lg:h-38 bg-card">
+
+            <!-- Avatar -->
+            <div class="py-2 rounded-full relative">
+                <img *ngIf="user?.avatar" class="w-24 h-24 rounded-full ring-4 ring-bg-card"
+                    [src]="ApiImage + user?.avatar" alt="User avatar">
+                <mat-icon class="w-24 h-24" *ngIf="!user?.avatar"
+                    [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-col items-center lg:items-start mt-4 lg:mt-0 lg:ml-8">
+                <div class="text-lg font-bold leading-none text-center">{{user?.name}}</div>
+                <div class="text-secondary">{{user?.address}}</div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:flex h-8 mx-8 border-l-2"></div>
+
+            <!-- Menu -->
+            <div class="flex items-center mt-8 mb-4 lg:m-0 lg:ml-auto space-x-6">
+                <a class="text-secondary" [routerLink]="['./detail/'+user?.id]">
+                    Trang cá nhân
+                </a>
+                <a class="font-medium" [routerLink]="['../taichinh']">
+                    Nạp tiền
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="flex flex-auto justify-center w-full max-w-5xl mx-auto p-6 sm:p-8">
+        <!-- Create Post -->
+        <fuse-card class="flex flex-col w-full p-6 sm:p-8 pb-6">
+            <p-pickList [source]="listTopicNotFollow" [target]="listTopicFollow" sourceHeader="Chủ đề chưa theo dõi"
+                targetHeader="Chủ đề theo dõi" [dragdrop]="true" [responsive]="true" [sourceStyle]="{'height':'30rem'}"
+                [targetStyle]="{'height':'30rem'}" filterBy="name" sourceFilterPlaceholder="Tìm theo tên"
+                targetFilterPlaceholder="Tìm theo tên" class="w-full"
+                [showSourceControls]="false" [showTargetControls]="false"
+                (onMoveToTarget)="onFollowTopic($event.items)" (onMoveAllToTarget)="onFollowTopic($event.items)"
+                (onMoveToSource)="onUnFollowTopic($event.items)" (onMoveAllToSource)="onUnFollowTopic($event.items)">
+                <ng-template let-product pTemplate="item">
+                    <div class="product-item">
+                        <div class="product-list-detail flex flex-row">
+                            <i class="pi pi-tag product-category-icon"></i>
+                            <h5 class="mb-2">{{product.name}}</h5>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-pickList>
+        </fuse-card>
+    </div>
+</div>

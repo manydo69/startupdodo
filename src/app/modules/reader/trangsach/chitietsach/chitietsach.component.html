@@ -1,0 +1,225 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+        <div class="flex flex-0 items-center bg-white dark:bg-transparent">
+            <a class="ml-2 text-lg font-medium" [routerLink]="['../../']">
+                Thông tin sách truyện /
+            </a>
+            <div class="ml-2 text-lg font-medium">
+                {{data?.name}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-auto bg-gray-100 w-full h-full" cdkScrollable>
+        <div class="flex-auto w-panel">
+            <div class="w-full p-4 flex flex-col border-1 border-gray-300 rounded bg-white mb-2">
+                <div class="flex flex-row">
+                    <img class="rounded-xl w-24 h-36 md:w-48 md:h-72 border" alt="Card"
+                        [src]="ApiImage + data?.coverImage" />
+                    <div class="flex flex-col items-start h-full ml-4" style="width: calc(100%);">
+                        <h3 class="text-3xl font-semibold text-line hover:underline mb-1">{{data?.name}}</h3>
+                        <h6 class="text-lg text-line mb-1"><i class="fa-solid fa-user"></i> Tác giả: {{data?.author}}
+                        </h6>
+                        <h6 class="text-lg text-line mb-1 cursor-pointer" [routerLink]="['../../../canhan/detail', data?.user]"><i
+                                class="fa-solid fa-user"></i> Người đăng: {{data?.createUser}}</h6>
+                        <h6 class="text-lg text-line mb-1"><i class="fa-solid fa-tag"></i>
+                            Thể loại:
+                            <ng-template *ngFor="let topic of data?.listTopic">
+                                <p-chip label="Action"></p-chip>
+                            </ng-template>
+                        </h6>
+                        <p-rating class=" mb-1" [(ngModel)]="ratingModel.rate" [cancel]="false"
+                            (onRate)="onRating()"></p-rating>
+                        <p-dialog header="Header" [(visible)]="ratingVisible" [breakpoints]="{ '768px': '75vw' }"
+                            [style]="{ width: '50vw' }" [closable]="false">
+                            <ng-template pTemplate="header">
+                                <span class="text-xl font-bold">Nhận xét</span>
+                            </ng-template>
+                            <textarea class="w-full" rows="3" pInputTextarea
+                                [(ngModel)]="ratingModel.comment"></textarea>
+                            <p class="text-xs italic">(*) Với nội dung nhận xét chứa 100 ký tự trở lên, bạn sẽ được nhận thêm point.</p>
+                            <ng-template pTemplate="footer">
+                                <button mat-stroked-button matTooltip="Hủy bỏ" type="button"
+                                    (click)="ratingVisible = false;">
+                                    <span>Hủy bỏ</span>
+                                </button>
+                                <button class="ml-2" color="primary" mat-flat-button matTooltip="Đồng ý" type="button"
+                                    (click)="onRatingBook()">
+                                    <span>Đồng ý</span>
+                                </button>
+                            </ng-template>
+                        </p-dialog>
+                        <!-- <div class=" mb-1">
+                            <p-tag *ngIf="data?.status=='HOAN_THANH'" value="Hoàn thành" severity="success"></p-tag>
+                            <p-tag *ngIf="data?.status=='CHUA_HOAN_THANH'" value="Chưa hoàn thành"
+                            severity="info"></p-tag>
+                        </div> -->
+                        <div class="flex items-center gap-x-2 mb-2">
+                            <span><i class="fa-solid fa-eye"></i> {{ data?.readCount }}</span>
+                            <span><i class="fa-solid fa-star"></i> {{data?.rating}}</span>
+                            <span><i class="fa-solid fa-bookmark"></i> {{data?.savingCount}}</span>
+                        </div>
+                        <div class="flex items-center gap-x-2 mb-2">
+                            <div>
+                                <p-tag *ngIf="data?.status=='HOAN_THANH'" value="Hoàn thành" severity="success"></p-tag>
+                                <p-tag *ngIf="data?.status=='CHUA_HOAN_THANH'" value="Chưa hoàn thành"
+                                    severity="info"></p-tag>
+                            </div>
+                        </div>
+                        <div class=" mb-2">
+                            <p-tag *ngIf="data?.coinCost==0; else elseBlock" value="Miễn phí"
+                                severity="success"></p-tag>
+                            <ng-template #elseBlock>
+                                <p-tag *ngIf="data?.isUnlock==true" value="Đã mua" severity="info"></p-tag>
+                                <p-tag *ngIf="data?.isUnlock==false" [value]="'Mua với ' + data?.coinCost + ' coin'"
+                                    severity="warning"></p-tag>
+                            </ng-template>
+                        </div>
+                        <div class="flex items-center gap-x-2 mb-2">
+                            <button class="" mat-flat-button color="primary" [tabIndex]="0" type="button"
+                                (click)="onOpenChapter(chaptersShow[0])">
+                                <!-- <i class="fa-solid fa-check icon-size-5"></i> -->
+                                <i class="fa-brands fa-readme icon-size-5"></i>
+                                <span class="hidden md:inline-block ml-2">Đọc chương đầu {{data?.coinCost==0 ? '' :
+                                    'miễn phí'}}</span>
+                            </button>
+                            <button *ngIf="!data?.isSaved" class="button-blue" mat-flat-button
+                                matTooltip="Thêm vào danh sách lưu" type="button" (click)="onSavingBook()">
+                                <i class="fa-solid fa-bookmark icon-size-5"></i>
+                                <span class="hidden md:inline-block ml-2">Lưu</span>
+                            </button>
+                            <button *ngIf="data?.isSaved" class="button-red" mat-flat-button matTooltip="Bỏ lưu sách"
+                                type="button" (click)="onUnSavingBook()">
+                                <i class="fa-solid fa-bookmark icon-size-5"></i>
+                                <span class="hidden md:inline-block ml-2">Bỏ lưu</span>
+                            </button>
+                            <button class=" button-warn" mat-flat-button type="button" (click)="onReport()"
+                                matTooltip="Báo cáo">
+                                <i class="fa-solid fa-flag icon-size-5"></i>
+                                <span class="hidden md:inline-block ml-2">Báo cáo</span>
+                            </button>
+                            <p-dialog header="Header" [(visible)]="reportVisible" [breakpoints]="{ '768px': '75vw' }"
+                                [style]="{ width: '50vw' }" [closable]="false">
+                                <ng-template pTemplate="header">
+                                    <span class="text-xl font-bold">Báo cáo sách</span>
+                                </ng-template>
+                                <div class="flex flex-col justify-center">
+                                    <label for="gender" class="block">Loại vi pham:</label>
+                                    <p-dropdown name="gender" styleClass="w-full" [options]="listReportCategory"
+                                        [(ngModel)]="reportModel.category" optionLabel="content" optionValue="id"
+                                        [showClear]="true" placeholder="Chọn loại vi phạm" appendTo="body"
+                                        required="true"></p-dropdown>
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <label for="gender" class="block">Nhập bình luận của bạn:</label>
+                                    <textarea class="w-full" rows="3" pInputTextarea
+                                        [(ngModel)]="reportModel.content"></textarea>
+                                </div>
+                                <p class="text-xs italic">(*) Bạn hãy nêu chi tiết lỗi vi phạm, vị trí để quản lý dễ xác định hơn. Bạn sẽ được cộng thêm point nếu báo cáo được phê duyệt.</p>
+                                <ng-template pTemplate="footer">
+                                    <button mat-stroked-button matTooltip="Hủy bỏ" type="button"
+                                        (click)="reportVisible = false;">
+                                        <span>Hủy bỏ</span>
+                                    </button>
+                                    <button class="ml-2" color="primary" mat-flat-button matTooltip="Đồng ý"
+                                        type="button" (click)="onReportBook()">
+                                        <span>Đồng ý</span>
+                                    </button>
+                                </ng-template>
+                            </p-dialog>
+                        </div>
+                        <div *ngIf="data?.coinCost !=0 && !data?.isUnlock && data?.user != user?.id"
+                            class="flex items-center gap-x-2 mb-1">
+                            <button class="" color="primary" mat-flat-button type="button" (click)="onBuyBook()"
+                                [matTooltip]="'Mua với ' + data?.coinCost + ' coin'">
+                                <i class="fa-solid fa-money-bill icon-size-5"></i>
+                                <span class="hidden md:inline-block ml-2">{{'Mua với ' + data?.coinCost + '
+                                    coin'}}</span>
+                            </button>
+                        </div>
+                        <!-- <h6 class="text-lg text-paragraph mb-1">{{data?.description}}</h6> -->
+                    </div>
+                </div>
+
+                <p-divider align="center">
+                    <div class="inline-flex align-items-center">
+                        <b class="text-2xl text-primary">Thông tin truyện</b>
+                    </div>
+                </p-divider>
+                <h6 class="text-lg text-paragraph mb-1">{{data?.description}}</h6>
+
+                <p-divider align="center">
+                    <div class="inline-flex align-items-center">
+                        <b class="text-2xl text-primary">Danh sách chương</b>
+                    </div>
+                </p-divider>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4 w-full min-w-0 p-6">
+                    <div *ngFor="let chapter of chaptersShow; let i = index" class="flex flex-row items-center">
+                        <i class="fa-solid fa-book mr-2"></i>
+                        <a class="text-xl font-semibold text-line cursor-pointer hover:underline"
+                            (click)="onOpenChapter(chapter)">Chương
+                            {{chapter.order}}: {{chapter.name}}</a>
+                        <i *ngIf="!chapter.readable" class="fa-solid fa-lock ml-2"></i>
+                        <p-dialog header="Header" [(visible)]="chapter.visibleDialog" appendTo="body"
+                            [breakpoints]="{ '768px': '75vw' }" [style]="{ width: '50vw' }" [closable]="false">
+                            <ng-template pTemplate="header">
+                                <span class="text-xl font-bold">Để đọc chương này bạn cần mua sách hoặc mua chương này.</span>
+                            </ng-template>
+                            <ng-template pTemplate="footer">
+                                <button mat-stroked-button matTooltip="Hủy bỏ" type="button"
+                                    (click)="chapter.visibleDialog = false">
+                                    <span>Hủy bỏ</span>
+                                </button>
+                                <button class="ml-2" color="primary" mat-flat-button matTooltip="Đồng ý" type="button"
+                                    (click)="chapter.visibleDialog = false; onBuyBook()">
+                                    <span>Mua sách với {{data.coinCost}} coin</span>
+                                </button>
+                                <button class="button-blue" mat-flat-button matTooltip="Hủy bỏ" type="button"
+                                    (click)="chapter.visibleDialog = false; onBuyChapter(chapter)">
+                                    <span>Mua chương với {{chapter.coinCost}} coin</span>
+                                </button>
+                            </ng-template>
+                        </p-dialog>
+                    </div>
+                </div>
+                <p-paginator [rows]="50" pageLinkSize="3" [showFirstLastIcon]="false"
+                    [totalRecords]="chaptersShow.length" (onPageChange)="onPageChange($event, 50)"></p-paginator>
+
+                <p-divider align="center">
+                    <div class="inline-flex align-items-center">
+                        <b class="text-2xl text-primary">Nhận xét về sách</b>
+                    </div>
+                </p-divider>
+                <div class="overflow-y-hidden">
+                    <div class="relative flex flex-col mx-4 sm:mx-8 my-6">
+                        <div *ngFor="let rating of listRating" class="flex items-start">
+                            <img *ngIf="rating?.avatar" class="w-8 h-8 rounded-full mr-4" [src]="ApiImage+rating.avatar"
+                                alt="Card cover image">
+                            <mat-icon class="w-8 h-8"
+                            *ngIf="!rating?.avatar"
+                            [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+                            <div class="flex flex-col mt-0.5">
+                                <span class="text-paragraph">
+                                    <b>{{rating.userName}}</b> {{rating.comment}}
+                                </span>
+                                <div class="flex items-center text-sm text-secondary mt-2">
+                                    <p-rating class="mr-2" [(ngModel)]="rating.rate" [cancel]="false" readonly="true"></p-rating>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="flex mt-3 w-full" style="float: right;">
+                    <button class="w-full" mat-flat-button color="primary" [tabIndex]="0" type="button" (click)="pageNum = pageNum+1; loadRatings(pageNum)">
+                        <i class="fa-solid fa-angles-down icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Tải thêm nhận xét</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

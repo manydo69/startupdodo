@@ -1,0 +1,99 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col shadow bg-card">
+
+        <!-- Cover image -->
+        <!-- <div>
+            <img
+                class="h-40 lg:h-80 object-cover"
+                src="assets/images/pages/profile/cover.jpg"
+                alt="Cover image">
+        </div> -->
+
+        <!-- User info -->
+        <div class="flex flex-col flex-0 lg:flex-row items-center max-w-5xl w-full mx-auto px-8 h-auto lg:h-38 bg-card">
+
+            <!-- Avatar -->
+            <div class="py-2 rounded-full relative">
+                <img *ngIf="userInfo?.avatar" class="w-24 h-24 rounded-full ring-4 ring-bg-card" [src]="ApiImage + userInfo?.avatar" alt="User avatar">
+                <mat-icon class="w-24 h-24"
+                *ngIf="!userInfo?.avatar"
+                [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+                <p-fileUpload #fileForm accept="image/*" class="text-red-400 z-10 w-full text-base absolute bottom-0 -right-18 avatar-upload" styleClass="avatar-upload"
+                    maxFileSize="10485760" (onSelect)="myUploader($event, fileForm)" chooseIcon="pi-pencil" style="background-color: transparent !important; border-color: transparent !important;" styleClass="text-blue-500"
+                    invalidFileSizeMessageSummary=""
+                    invalidFileSizeMessageDetail='File Size không được quá 10 MB'
+                    mode="basic">
+                </p-fileUpload>
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-col items-center lg:items-start mt-4 lg:mt-0 lg:ml-8">
+                <div class="text-lg font-bold leading-none text-center">{{dataShow?.name}}</div>
+                <div class="text-secondary">{{dataShow?.address}}</div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:flex h-8 mx-8 border-l-2"></div>
+
+            <!-- Menu -->
+            <div class="flex items-center mt-8 mb-4 lg:m-0 lg:ml-auto space-x-6">
+                <a class="text-secondary" [routerLink]="['./detail/'+dataShow.id]">
+                    Trang cá nhân
+                </a>
+                <a class="font-medium" [routerLink]="['../taichinh']">
+                    Nạp tiền
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="flex flex-auto justify-center w-full max-w-5xl mx-auto p-6 sm:p-8">
+        <!-- Create Post -->
+        <fuse-card class="flex flex-col w-full p-6 sm:p-8 pb-6">
+            <form #form="ngForm" class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 w-full min-w-0 overflow-y-auto" (submit)="onSaveUserInfo(form)">
+                <div class="flex flex-col justify-center">
+                    <label for="name" class="block">Họ tên: <span class="text-red-500">(*)</span></label>
+                    <input id="name" name="name" type="username" pInputText
+                        [(ngModel)]="userInfo.name" [required]="true" />
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="email" class="block">Email:</label>
+                    <input id="email" name="email" type="email" pInputText
+                        [(ngModel)]="userInfo.email" readonly />
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="gender" class="block">Giới tính:</label>
+                    <p-dropdown name="gender" styleClass="w-full" [options]="genders" [(ngModel)]="userInfo.gender" optionLabel="name" optionValue="id" [showClear]="true" placeholder="Chọn giới tính" appendTo="body"></p-dropdown>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="birthday" class="block">Ngày sinh:</label>
+                    <p-calendar styleClass="w-full" id="birthday" name="birthday" [(ngModel)]="userInfo.birthday" dateFormat="dd/mm/yy" appendTo="body"></p-calendar>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="phone" class="block">Số điện thoại:</label>
+                    <input id="phone" name="phone" inputId="phone" [(ngModel)]="userInfo.phone" styleClass="w-full" pInputText type="number"/>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="address" class="block">Địa chỉ:</label>
+                    <input id="address" name="address" type="username" aria-describedby="username2-help" pInputText
+                        [(ngModel)]="userInfo.address"/>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <label for="address" class="block">Nhận thông báo:</label>
+                    <p-selectButton [options]="stateOptions" [(ngModel)]="userInfo.notification" optionLabel="label" optionValue="value"></p-selectButton>
+                </div>
+                <button
+                    class="px-6 mt-8 col-span-1 sm:col-span-2"
+                    mat-flat-button
+                    [color]="'primary'"
+                    type="submit">
+                    Cập nhật thông tin
+                </button>
+            </form>
+        </fuse-card>
+    </div>
+</div>

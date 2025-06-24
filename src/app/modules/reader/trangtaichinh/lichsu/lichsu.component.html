@@ -1,0 +1,99 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col shadow bg-card">
+
+        <!-- Cover image -->
+        <!-- User info -->
+        <div class="flex flex-col flex-0 lg:flex-row items-center max-w-5xl w-full mx-auto px-8 h-auto lg:h-38 bg-card">
+
+            <!-- Avatar -->
+            <div class="py-2 rounded-full relative">
+                <img *ngIf="dataShow?.avatar" class="w-24 h-24 rounded-full ring-4 ring-bg-card" [src]="ApiImage + dataShow?.avatar"
+                    alt="User avatar">
+                <mat-icon class="w-24 h-24"
+                    *ngIf="!dataShow?.avatar"
+                    [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-col items-center lg:items-start mt-4 lg:mt-0 lg:ml-8">
+                <div class="text-lg font-bold leading-none text-center">{{dataShow?.name}}</div>
+                <div class="text-secondary">{{dataShow?.address}}</div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:flex h-8 mx-8 border-l-2"></div>
+
+            <!-- Stats -->
+            <div class="flex items-center mt-6 lg:mt-0 space-x-6">
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.point ? dataShow?.point : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">POINTS</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.coin ? dataShow?.coin : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">COIN</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.gold ? dataShow?.gold : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">GOLD</span>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="flex items-center mt-8 mb-4 lg:m-0 lg:ml-auto space-x-6">
+                <a class="text-secondary" [routerLink]="['../../canhan/detail/' + dataShow?.id]">
+                    Trang cá nhân
+                </a>
+                <a class="font-medium" [routerLink]="['../']">
+                    Nạp tiền
+                </a>
+                <a class="text-secondary" [routerLink]="['../../canhan']">
+                    Cài đặt
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="flex flex-col sm:flex-row flex-auto justify-center w-full max-w-5xl mx-auto p-6 sm:p-8">
+        <!-- Create Post -->
+        <fuse-card class="flex flex-col w-full p-6 sm:p-8 pb-6">
+            <p-dataView #dv [value]="listTransaction" [paginator]="true" [rows]="9" filterBy="content" [sortField]="sortField"
+                [sortOrder]="sortOrder" layout="list">
+                <ng-template pTemplate="header">
+                    <div class="flex flex-column md:flex-row md:justify-content-between">
+                        <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sắp xếp theo thời gian"
+                            (onChange)="onSortChange($event)" styleClass="mb-2 md:mb-0"></p-dropdown>
+                        <span class="p-input-icon-left mb-2 md:mb-0">
+                            <i class="pi pi-search"></i>
+                            <input type="search" pInputText placeholder="Tìm kiếm theo nội dung"
+                                (input)="dv.filter($event.target.value)">
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template let-product pTemplate="listItem">
+                    <div class="col-12">
+                        <div class="product-list-item">
+                            <div class="product-list-detail">
+                                <div class="product-name">{{product.type}}</div>
+                                <div class="product-description">{{product.content}}</div>
+
+                                <div *ngIf="product.bankCode">
+                                    <i class="fa-solid fa-building-columns mr-2" [matTooltip]="'Mã ngân hàng'"></i><span class="product-category mr-2">{{product.bankCode}}</span>
+                                    <i class="fa-solid fa-money-check mr-2" [matTooltip]="'Loại thẻ'"></i><span class="product-category">{{product.cardType}}</span>
+                                </div>
+                            </div>
+                            <div class="product-list-action">
+                                <p-tag [value]="product.status == 'THANHCONG' ? 'THÀNH CÔNG' : 'THẤT BẠI'" [severity]="getSeverity(product.status)"></p-tag>
+                                <span>{{product.createDate | date: 'dd/MM/yyyy, h:mm a'}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-dataView>
+        </fuse-card>
+    </div>
+</div>

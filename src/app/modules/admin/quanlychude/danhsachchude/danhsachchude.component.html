@@ -1,0 +1,116 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+        <div class="flex flex-0 items-center bg-white dark:bg-transparent">
+            <div class="ml-2 text-lg font-medium">
+                Thông tin chủ đề
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-hidden bg-gray-100 w-full h-full" cdkScrollable>
+        <!-- CONTENT GOES HERE -->
+        <form #formChuDe="ngForm" action="" class="h-full">
+            <div #main class="edit-table border-1 border-gray-300 rounded bg-white p-4 h-full overflow-y-auto md:overflow-y-auto">
+                <p-table #book styleClass="p-datatable-gridlines" [value]="listTopic" [tableStyle]="{ 'width': '100%'}"
+
+                    [responsiveLayout]="'stack'" [breakpoint]="'768px'"
+                    [globalFilterFields]="['name', 'code', 'author', 'createDate', 'status']">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 4rem; min-width: 4rem; text-align: center;">STT</th>
+                            <th style="width: 70%; text-align: center;">
+                                Tên chủ đề
+                                <p-columnFilter type="text" field="name" display="menu" matchMode="contains"></p-columnFilter>
+                            </th>
+                            <th style="width: 30%; text-align: center;">
+                                Mã
+                                <p-columnFilter type="text" field="code" display="menu" matchMode="contains"></p-columnFilter>
+                            </th>
+                            <th style="width: 8rem; min-width: 8rem; text-align: center;">
+                                Ngày tạo
+                                <p-columnFilter type="date" field="createDate" display="menu"></p-columnFilter>
+                            </th>
+                            <th style="width: 8rem;  min-width: 8rem; text-align: center;">
+                                Người tạo
+                                <p-columnFilter type="text" field="createUser" display="menu" matchMode="contains"></p-columnFilter>
+                            </th>
+                            <th style="width: 8rem;  min-width: 8rem; text-align: center;">
+                                Trạng thái
+                                <p-columnFilter type="boolean" field="isDeleted" display="menu">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-dropdown name="statusFilter" [ngModel]="value" [options]="[true, false]" (onChange)="filter($event.value)" placeholder="Any">
+                                            <ng-template let-option pTemplate="item">
+                                                <p-tag [value]="option ? 'Đã xóa': 'Hoạt động'" [severity]="getSeverity(option)"></p-tag>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>
+                            </th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <button mat-icon-button (click)="addThanhPhan()" matTooltip="Thêm thành phần" type="button">
+                                    <i class="fa-solid fa-circle-plus icon-size-5"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product let-index="rowIndex">
+                        <tr class="">
+                            <td style="width: 4rem; text-align: center;">
+                                <span class="p-column-title">STT</span>
+                                {{ index + 1 }}
+                            </td>
+                            <td style="width: 60%">
+                                <span class="p-column-title">Tên chủ đề</span>
+                                <input [required]="true" [disabled]="!product.isEdit" [name]="'chapterName'+index" class="w-full" type="text" pInputText
+                                        [(ngModel)]="product.name" />
+                            </td>
+                            <td style="width: 40%">
+                                <span class="p-column-title">Mã</span>
+                                <input [required]="true" [disabled]="!product.isEdit" [name]="'code'+index" class="w-full" type="text" pInputText
+                                        [(ngModel)]="product.code" />
+                            </td>
+                            <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <span class="p-column-title">Ngày tạo</span>
+                                {{ product.createDate | date: 'dd/MM/yyyy'}}
+                            </td>
+                            <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <span class="p-column-title">Người tạo</span>
+                                {{ product.createUser }}
+                            </td>
+                            <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <span class="p-column-title">Trạng thái</span>
+                                <button *ngIf="product.isDeleted == null || product.isDeleted == false" [disabled]="!product.isEdit" type="button" (click)="product.isDeleted = true">
+                                    <p-tag value="Hoạt động" severity="info"></p-tag>
+                                </button>
+                                <button *ngIf="product.isDeleted == true" [disabled]="!product.isEdit" type="button" (click)="product.isDeleted = null">
+                                    <p-tag value="Đã xóa" severity="danger"></p-tag>
+                                </button>
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">
+                                    Thao tác
+                                </span>
+                                <div>
+                                    <button *ngIf="product.isEdit" type="button" (click)="onRowUpdate(product, index)" class="mr-2">
+                                        <!-- <i *ngIf="!product.isEdit" class="fa-solid fa-circle-check icon-size-5 text-green-400" matTooltip="Lưu"></i> -->
+                                        <i class="fa-solid fa-circle-check icon-size-5 text-green-400" matTooltip="Cập nhật"></i>
+                                    </button>
+                                    <button *ngIf="!product.isEdit" type="button" (click)="onRowEditInit(product, index)" class="mr-2">
+                                        <i class="fa-solid fa-file-pen icon-size-5" matTooltip="Sửa"></i>
+                                        <!-- <i *ngIf="product.isEdit" class="fa-solid fa-file-circle-check icon-size-5" matTooltip="Cập nhật"></i> -->
+                                    </button>
+                                    <button *ngIf="product.isDeleted == null || product.isDeleted == false" type="button" (click)="onRowDeleteInit(product, index)" class="">
+                                        <i class="pi pi-times" style="font-size: 1.5rem; color:red" matTooltip="Xóa"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </form>
+    </div>
+</div>

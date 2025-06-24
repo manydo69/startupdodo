@@ -1,0 +1,59 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-auto bg-gray-100 w-full h-full" cdkScrollable>
+        <div class="flex-auto w-panel">
+            <!-- List products -->
+            <div class="w-full p-4 flex flex-col border-1 border-gray-300 rounded bg-white mb-2">
+                <div class="grow w-full sm:w-auto flex flex-col justify-center items-end">
+                    <div class="flex items-center justify-end w-40">
+                        <p-dropdown [style]="{ width: '185px'}" optionLabel="label" optionValue="id" id="topic"
+                            name="topic" [options]="listSort" appendTo="body" [filter]="true" filterBy="name"
+                            placeholder="Lựa chọn sắp xếp" [(ngModel)]="sortFilters" [showClear]="true" (onChange)="loadPosts(0)">
+                        </p-dropdown>
+                        <p-toggleButton class="ml-2" [(ngModel)]="sortOrder" onLabel="Tăng" offLabel="Giảm" onIcon="pi pi-sort-alpha-up" offIcon="pi pi-sort-alpha-down-alt" (onChange)="loadPosts(0)"></p-toggleButton>
+                    </div>
+                </div>
+                <p-divider align="center">
+                    <div class="inline-flex align-items-center">
+                        <b class="text-2xl md:text-4xl text-primary">Sách đã lưu</b>
+                    </div>
+                </p-divider>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4 w-full min-w-0 p-6">
+                    <div *ngFor="let book of listBook" class="flex flex-row md:justify-center items-center">
+                        <img class="rounded-xl w-24 h-36 md:w-36 md:h-56 border cursor-pointer" alt="Card"
+                            [src]="ApiImage + book.coverImage" [routerLink]="['../detail', book.id]" />
+                        <div class="flex flex-col items-start h-full ml-4" style="width: calc(50%);">
+                            <h3 class="text-xl font-semibold text-line cursor-pointer hover:underline"
+                                [routerLink]="['../detail', book.id]">{{book.name}}</h3>
+                            <h6 class="text-lg text-line">Tác giả: {{book.author}}</h6>
+                            <div class="flex items-center gap-x-2">
+                                <div>
+                                    <p-tag *ngIf="book.status=='HOAN_THANH'" value="Hoàn thành"
+                                        severity="success"></p-tag>
+                                    <p-tag *ngIf="book.status=='CHUA_HOAN_THANH'" value="Chưa hoàn thành"
+                                        severity="info"></p-tag>
+                                </div>
+                                <span><i class="fa-solid fa-star"></i> {{book?.rating}}</span>
+                                <span><i class="fa-solid fa-bookmark"></i> {{book?.savingCount}}</span>
+                            </div>
+                            <div class=" mb-1">
+                                <p-tag *ngIf="data?.coinCost==0; else elseBlock" value="Miễn phí" severity="success"></p-tag>
+                                <ng-template #elseBlock>
+                                    <p-tag *ngIf="data?.isUnlock==true" value="Đã mua"
+                                        severity="info"></p-tag>
+                                    <p-tag *ngIf="data?.isUnlock==false" [value]="'Mua với ' + data.coinCost + ' coin'"
+                                        severity="warning"></p-tag>
+                                </ng-template>
+                            </div>
+                            <h6 class="text-lg text-paragraph">{{book.description}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <p-paginator [rows]="16" pageLinkSize="3" [showFirstLastIcon]="true" [totalRecords]="totalNum"
+                    (onPageChange)="onPageChange($event)"></p-paginator>
+            </div>
+        </div>
+    </div>
+</div>

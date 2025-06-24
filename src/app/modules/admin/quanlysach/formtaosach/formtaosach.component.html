@@ -1,0 +1,162 @@
+<form #form="ngForm" name="form">
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+        <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+            <div *ngIf="this.id" class="flex flex-0 items-center bg-white dark:bg-transparent">
+                <!-- Back button -->
+                <a [routerLink]="['../../']">
+                    <i class="pi pi-angle-left" style="font-size: 2rem"></i>
+                </a>
+                <div class="ml-2 text-lg font-medium">
+                    Thông tin sách truyện
+                </div>
+            </div>
+
+            <div *ngIf="this.id" class="flex items-center w-full justify-end h-toolbar">
+                <button *ngIf="data?.status == 'CHO_DUYET'" mat-flat-button color="primary" [tabIndex]="0" type="button" (click)="onApproveBook()"
+                    matTooltip="Phê duyệt">
+                    <i class="fa-solid fa-check icon-size-5"></i>
+                    <span class="hidden md:inline-block ml-2">Phê duyệt</span>
+                </button>
+                <button *ngIf="data?.status != 'BAN' && data?.status!= 'DRAFT'" ngClass="button-red ml-2" mat-flat-button  type="button" (click)="onBanBook()" class="">
+                    <i class="fa-solid fa-ban icon-size-5" matTooltip="Chặn"></i>
+                    <span class="hidden md:inline-block ml-2">Chặn</span>
+                </button>
+                <button *ngIf="data?.status == 'BAN'" ngClass="button-green ml-2" mat-flat-button  type="button" (click)="onApproveBook()" class="">
+                    <i class="fa-solid fa-ban icon-size-5" matTooltip="Bỏ chặn"></i>
+                    <span class="hidden md:inline-block ml-2">Bỏ chặn</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-auto sm:p-2 shadow overflow-y-auto bg-gray-100 w-full" cdkScrollable>
+            <!-- CONTENT GOES HERE -->
+
+            <!-- BOX 1-->
+            <div class="w-full p-4 flex border-1 border-gray-300 rounded bg-white">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 w-full min-w-0 overflow-y-auto">
+                    <div class="flex flex-col justify-center">
+                        <label for="username2" class="block">Tên sách, truyện:</label>
+                        <input id="username2" name="name" type="username" aria-describedby="username2-help" pInputText
+                            [(ngModel)]="data.name" [required]="true" [disabled]="true"/>
+                        <small *ngIf="false" id="username2-help" class="p-error block">Username is not
+                            available.</small>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <label for="username2" class="block">Tên tác giả:</label>
+                        <input id="username2" name="author" type="username" aria-describedby="username2-help" pInputText
+                            [(ngModel)]="data.author" [required]="true" [disabled]="true"/>
+                        <small *ngIf="false" id="username2-help" class="p-error block">Username is not
+                            available.</small>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <label for="topic">Thể loại:</label>
+                        <p-multiSelect [style]="{ width: '100%'}" optionLabel="name" optionValue="id" id="topic"
+                            name="topic" [options]="listTopic" appendTo="body" [filter]="true" filterBy="name"
+                            placeholder="&nbsp;" [(ngModel)]="data.listTopic" [disabled]="true">
+                        </p-multiSelect>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="pr-2">Trạng thái:</label>
+                        <p-dropdown
+                            [style]="{ width: '100%'}" [disabled]="true" name="status" [(ngModel)]="data.status"
+                            [options]="statuses" appendTo="body" optionLabel="name" optionValue="name"
+                            optionDisabled="disable">
+                            <ng-template let-option pTemplate="item">
+                                <p-tag [value]="option.name" [severity]="getSeverityBook(option.name)"></p-tag>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full h-auto p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div class="w-full">
+                    <div class="flex flex-col justify-center">
+                        <label for="description">Mô tả:</label>
+                        <textarea id="description" name="description" rows="5" cols="30" class="w-full" pInputTextarea
+                            [(ngModel)]="data.description" [disabled]="true"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOX 1-->
+            <div class="w-full p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 w-full min-w-0 overflow-y-auto">
+                    <div class="flex flex-col justify-center col-span-2">
+                        <div class="flex gap-x-2">
+                            <div class="flex flex-col">
+                                <label>Ảnh bìa:</label>
+                                <app-imageview *ngIf="data.coverImage" [source]="ApiImage + data.coverImage"
+                                    [type]="'url'" [width]="'75'" [height]="'100'"></app-imageview>
+                                <app-imageview *ngIf="!data.coverImage" [type]="'url'" [width]="'75'"
+                                    [height]="'100'"></app-imageview>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOX 1-->
+            <div class="w-full p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div #main class="edit-table w-full">
+                    <p-table styleClass="p-datatable-gridlines" [value]="data.listChapter" dataKey="id"
+                        [tableStyle]="{ width: '100%' }" responsiveLayout="stack" [breakpoint]="'960px'"
+                        [scrollable]="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <!-- <th style="width: 5%"></th> -->
+                                <th style="width: 4rem; text-align: center;">STT</th>
+                                <th style="width: 65%; text-align: center;">Tên chương</th>
+                                <th style="width: 35%; text-align: center;">Mức giá</th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">Ngày tạo</th>
+                                <th style="width: 8rem; min-width: 8rem; text-align: center;">Trạng thái</th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    Thao tác
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product let-index="rowIndex">
+                            <tr [pReorderableRow]="index">
+                                <!-- <td style="width: 5%">
+                                    <span class="pi pi-bars" pReorderableRowHandle></span>
+                                </td> -->
+                                <td style="width: 4rem; text-align: center;" [pReorderableRowHandle]="index">{{ product.order }}
+                                </td>
+                                <td style="width: 65%">
+                                    <input [name]="'chapterName'+index" class="w-full" type="text" pInputText
+                                        [(ngModel)]="product.name" [disabled]="true"/>
+                                </td>
+                                <td>
+                                    <input [name]="'coinCost'+index" class="w-full" type="number" pInputText [min]="0"
+                                        [(ngModel)]="product.coinCost" [disabled]="true"/>
+                                </td>
+                                <td style="width: 6rem;min-width: 6rem; text-align: center;">{{ product.createDate | date: 'dd/MM/yyyy'
+                                    }}</td>
+                                <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                    <!-- <button [disabled]="product.status=='BAN'" type="button" (click)="onChangeStatus(product)"> -->
+                                        <p-tag [value]="product.status"
+                                            [severity]="getSeverity(product.status)">
+                                        </p-tag>
+                                    <!-- </button> -->
+                                </td>
+                                <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <button type="button" (click)="onRowEditInit(product, index)" class="mr-2">
+                                        <i class="fa-solid fa-circle-info icon-size-5" style="color:green" matTooltip="Xem thông tin"></i>
+                                    </button>
+                                    <button *ngIf="product?.status != 'BAN' && product?.status!= 'DRAFT'" type="button" (click)="onBanChapter(product)" class="">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:red" matTooltip="Chặn"></i>
+                                    </button>
+                                    <button *ngIf="product?.status == 'BAN'" type="button" (click)="onUnBanChapter(product)" class="">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:green" matTooltip="Bỏ chặn"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

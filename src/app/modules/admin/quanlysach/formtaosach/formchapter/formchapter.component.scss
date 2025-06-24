@@ -1,0 +1,11 @@
+.h-modal {
+    height: 900px !important;
+    min-width: 650px;
+}
+
+@media only screen and (max-height: 768px) and (-webkit-min-device-pixel-ratio: 1) {
+    .h-modal {
+        height: 100vh !important;
+        min-width: 650px;
+    }
+}

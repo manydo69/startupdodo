@@ -1,0 +1,149 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col shadow bg-card">
+
+        <!-- Cover image -->
+        <!-- User info -->
+        <div class="flex flex-col flex-0 lg:flex-row items-center max-w-5xl w-full mx-auto px-8 h-auto lg:h-38 bg-card">
+
+            <!-- Avatar -->
+            <div class="py-2 rounded-full relative">
+                <img *ngIf="user?.avatar" class="w-24 h-24 rounded-full ring-4 ring-bg-card"
+                    [src]="ApiImage + user?.avatar" alt="User avatar">
+                <mat-icon class="w-24 h-24" *ngIf="!user?.avatar"
+                    [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            </div>
+
+            <!-- Details -->
+            <div class="flex flex-col items-center lg:items-start mt-4 lg:mt-0 lg:ml-8">
+                <div class="text-lg font-bold leading-none text-center">{{dataShow?.name}}</div>
+                <div class="text-secondary">{{dataShow?.address}}</div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden lg:flex h-8 mx-8 border-l-2"></div>
+
+            <!-- Stats -->
+            <div class="flex items-center mt-6 lg:mt-0 space-x-6">
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.point ? dataShow?.point : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">POINTS</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.coin ? dataShow?.coin : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">COIN</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="font-bold">{{dataShow?.gold ? dataShow?.gold : 0}}</span>
+                    <span class="text-sm font-medium text-secondary">GOLD</span>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="flex items-center mt-8 mb-4 lg:m-0 lg:ml-auto space-x-6">
+                <a class="text-secondary" [routerLink]="['../canhan/detail/' + dataShow?.id]">
+                    Trang cá nhân
+                </a>
+                <a class="font-medium" [routerLink]="['./lichsu']">
+                    Lịch sử thanh toán
+                </a>
+                <a class="text-secondary" [routerLink]="['../canhan']">
+                    Cài đặt
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="flex flex-col sm:flex-row flex-auto justify-center w-full max-w-5xl mx-auto p-6 sm:p-8">
+        <!-- Create Post -->
+        <fuse-card class="flex flex-col w-full sm:w-1/2 p-6 sm:p-8 pb-6 mr-8">
+            <p-tabView>
+                <p-tabPanel header="Nạp tiền">
+                    <form #form="ngForm" class="flex flex-col w-full min-w-0"
+                        (submit)="onChargePayment(form)">
+                        <div class="flex flex-col justify-center">
+                            <label for="name" class="block">Vui lòng nhập số tiền muốn nạp:</label>
+                            <!-- <input id="name" name="name" type="number" pInputText
+                                [(ngModel)]="amount" [required]="true" /> -->
+                            <p-inputNumber name="name" styleClass="w-full" [(ngModel)]="amount" [required]="true"
+                                inputId="name" [min]="0"> </p-inputNumber>
+                        </div>
+                        <button class="px-6 mt-8" mat-flat-button [color]="'primary'" type="submit">
+                            Nạp tiền
+                        </button>
+                    </form>
+                </p-tabPanel>
+                <p-tabPanel header="Đổi điểm">
+                    <form #formChangePoint="ngForm" class="flex flex-col w-full min-w-0 overflow-y-auto"
+                        (submit)="onChangePointPayment(formChangePoint)">
+                        <div class="flex flex-col justify-center">
+                            <label for="point" class="block">Vui lòng nhập số điểm muốn đổi:</label>
+                            <p-inputNumber name="point" styleClass="w-full" [(ngModel)]="point" [required]="true"
+                                inputId="point" [min]="0"> </p-inputNumber>
+                        </div>
+                        <button class="px-6 mt-8" mat-flat-button [color]="'primary'" type="submit">
+                            Đổi điểm
+                        </button>
+                    </form>
+                </p-tabPanel>
+                <p-tabPanel header="Rút tiền">
+                    <form #formChangeGold="ngForm" class="flex flex-col w-full min-w-0 overflow-y-auto"
+                        (submit)="onChangeGoldPayment(formChangeGold)">
+                        <div class="flex flex-col justify-center">
+                            <label for="gold" class="block">Vui lòng nhập số gold muốn đổi:</label>
+                            <p-inputNumber name="gold" styleClass="w-full" [(ngModel)]="goldExchange.gold"
+                                [required]="true" inputId="gold" [min]="0"> </p-inputNumber>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <label for="bank" class="block">Vui lòng chọn ngân hàng:</label>
+                            <p-dropdown name="bank" styleClass="w-full" [(ngModel)]="goldExchange.bankCode"
+                                [required]="true" inputId="bank" optionLabel="name" optionValue="code"
+                                [options]="listBank" appendTo="body" [filter]="true" filterBy="name" [showClear]="true">
+                            </p-dropdown>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <label for="bankAccount" class="block">Vui lòng nhập số tài khoản nhận:</label>
+                            <input id="bankAccount" name="bankAccount" pInputText class="w-full"
+                                [(ngModel)]="goldExchange.bankAccount" [required]="true" />
+                        </div>
+                        <button class="px-6 mt-8" mat-flat-button [color]="'primary'" type="submit">
+                            Đổi điểm
+                        </button>
+                    </form>
+                </p-tabPanel>
+            </p-tabView>
+
+
+
+        </fuse-card>
+        <fuse-card class="flex flex-col w-full sm:w-1/2 p-6 sm:p-8 pb-6 items-center mt-6 sm:mt-0 overflow-y-auto">
+            <b class="text-2xl text-primary">Tỷ lệ chuyển đổi:</b>
+            <div class="flex w-full">
+                <h3 class="w-1/3">500.000 VND</h3>
+                <div class="w-1/3 text-center">
+                    <i class="fa-solid fa-right-long icon-size-5"></i>
+                </div>
+                <h3 class="w-1/3">100 coin</h3>
+            </div>
+            <hr class="border-b mx-4 sm:mx-8 my-0">
+            <div class="flex w-full">
+                <h3 class="w-1/3">100 gold</h3>
+                <span class="w-1/3 text-center">
+                    <i class="fa-solid fa-right-long icon-size-5"></i>
+                </span>
+                <h3 class="w-1/3">400.000 VND</h3>
+            </div>
+            <hr class="border-b mx-4 sm:mx-8 my-0">
+            <div class="flex w-full">
+                <h3 class="w-1/3">100 point</h3>
+                <span class="w-1/3 text-center">
+                    <i class="fa-solid fa-right-long icon-size-5"></i>
+                </span>
+                <h3 class="w-1/3">1 coin</h3>
+            </div>
+        </fuse-card>
+    </div>
+</div>

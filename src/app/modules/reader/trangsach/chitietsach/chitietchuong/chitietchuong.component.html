@@ -1,0 +1,174 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+        <div class="flex flex-0 items-center bg-white dark:bg-transparent max-w-screen">
+            <a class="ml-2 text-lg font-medium whitespace-nowrap" [routerLink]="['../../']">
+                Sách truyện
+            </a>
+            <span>/</span>
+            <a class="ml-2 text-lg font-medium text-line" [routerLink]="['../../detail/' + data?.bookId]">
+                {{data?.bookName}}
+            </a>
+            <span>/</span>
+            <a class="ml-2 text-lg font-medium whitespace-nowrap">
+                Chương {{data?.order}}
+            </a>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-auto bg-gray-100 w-full h-full" cdkScrollable>
+        <div class="flex-auto max-w-5xl mx-auto">
+            <div class="w-full p-4 flex flex-col items-center border-1 border-gray-300 rounded bg-white mb-2">
+                <h1 class="text-line color-primary text-4xl">{{data?.bookName}}</h1>
+                <h3 class="text-line text-2xl">Chương {{data?.order}}: {{data?.name}}</h3>
+                <div class="flex">
+                    <button class="button-warn mr-2" mat-flat-button type="button"
+                        matTooltip="Báo cáo" (click)="onReport()">
+                        <i class="fa-solid fa-flag icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Báo cáo</span>
+                    </button>
+                    <p-dialog header="Header" [(visible)]="reportVisible" [breakpoints]="{ '768px': '75vw' }"
+                        [style]="{ width: '50vw' }" [closable]="false">
+                        <ng-template pTemplate="header">
+                            <span class="text-xl font-bold">Báo cáo sách</span>
+                        </ng-template>
+                        <div class="flex flex-col justify-center">
+                            <label for="gender" class="block">Loại vi pham:</label>
+                            <p-dropdown name="gender" styleClass="w-full" [options]="listReportCategory"
+                                [(ngModel)]="reportModel.category" optionLabel="content" optionValue="id"
+                                [showClear]="true" placeholder="Chọn loại vi phạm" appendTo="body"
+                                required="true"></p-dropdown>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <label for="gender" class="block">Nhập bình luận của bạn:</label>
+                            <textarea class="w-full" rows="3" pInputTextarea
+                                [(ngModel)]="reportModel.content"></textarea>
+                        </div>
+                        <p class="text-xs italic">(*) Bạn hãy nêu chi tiết lỗi vi phạm, vị trí để quản lý dễ xác định hơn. Bạn sẽ được cộng thêm point nếu báo cáo được phê duyệt.</p>
+                        <ng-template pTemplate="footer">
+                            <button mat-stroked-button matTooltip="Hủy bỏ" type="button"
+                                (click)="reportVisible = false;">
+                                <span>Hủy bỏ</span>
+                            </button>
+                            <button class="ml-2" color="primary" mat-flat-button matTooltip="Đồng ý" type="button"
+                                (click)="onReportBook()">
+                                <span>Đồng ý</span>
+                            </button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <button [disabled]="data?.order == 1" mat-flat-button class="button-primary" [tabIndex]="0"
+                        type="button" matTooltip="Chương trước" (click)="changeChapter(data.id - 1)">
+                        <i class="fa-solid fa-chevron-left icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Chương trước</span>
+                    </button>
+
+                    <p-dropdown id="chapterId" styleClass="w-20 sm:w-40 mx-2" name="chapterId" [(ngModel)]="data.id"
+                        [options]="listChapter" appendTo="body" optionLabel="name" optionValue="id"
+                        (onChange)="changeChapter($event.value)">
+                        <ng-template let-option pTemplate="item">
+                            <span>Chương {{option.order}}: {{option.name}}</span>
+                        </ng-template>
+                    </p-dropdown>
+
+                    <button [disabled]="data?.order == listChapter[listChapter.length-1]?.order" mat-flat-button
+                        class="button-primary" [tabIndex]="0" type="button" matTooltip="Chương sau"
+                        (click)="changeChapter(data.id + 1)">
+                        <span class="hidden md:inline-block mr-2">Chương sau</span>
+                        <i class="fa-solid fa-chevron-right icon-size-5"></i>
+                    </button>
+
+                    <button *ngIf="!data?.isSaved" class="button-blue ml-2" mat-flat-button
+                        matTooltip="Thêm vào danh sách lưu" type="button" (click)="onSavingBook()">
+                        <i class="fa-solid fa-bookmark icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Lưu</span>
+                    </button>
+                    <button *ngIf="data?.isSaved" class="button-red ml-2" mat-flat-button matTooltip="Bỏ lưu sách"
+                        type="button" (click)="onUnSavingBook()">
+                        <i class="fa-solid fa-bookmark icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Bỏ lưu</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full p-4 border-1 border-gray-300 rounded bg-white mb-2">
+                <div class="flex flex-col items-center mb-4">
+                    <button class="button-blue" mat-flat-button
+                        matTooltip="Chế độ đọc" type="button" (click)="generateFlipBook()">
+                        <i class="fa-solid fa-book-open-reader icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Chế độ đọc</span>
+                    </button>
+                </div>
+                <div class="flex flex-col items-center" *ngIf="data?.type == 'TRUYEN_TRANH'; else elseBlock">
+                    <div *ngFor="let img of data?.files">
+                        <img [src]="ApiImage + img.fileUrl" alt="" class="h-auto w-auto max-w-full">
+                    </div>
+                </div>
+
+                <ng-template #elseBlock>
+                    <p class="mt-4 text-xl sm:text-2xl" [innerHTML]="data?.content"></p>
+                </ng-template>
+
+            </div>
+
+            <div class="w-full p-4 flex flex-col items-center border-1 border-gray-300 rounded bg-white mb-2">
+                <div class="flex">
+                    <button class="button-warn mr-2" mat-flat-button matTooltip="Thêm thành phần" type="button"
+                        matTooltip="Báo cáo">
+                        <i class="fa-solid fa-flag icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Báo cáo</span>
+                    </button>
+
+                    <button mat-flat-button class="button-primary" [tabIndex]="0" type="submit"
+                        matTooltip="Chương trước">
+                        <i class="fa-solid fa-chevron-left icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Chương trước</span>
+                    </button>
+
+                    <p-dropdown styleClass="w-20 sm:w-40 mx-2" name="status" [(ngModel)]="data.id"
+                        [options]="listChapter" appendTo="body" optionLabel="name" optionValue="id"
+                        (onChange)="changeChapter($event.value)">
+                        <ng-template let-option pTemplate="item">
+                            <span>Chương {{option.order}}: {{option.name}}</span>
+                        </ng-template>
+                    </p-dropdown>
+
+                    <button mat-flat-button class="button-primary" [tabIndex]="0" type="submit" matTooltip="Chương sau">
+                        <span class="hidden md:inline-block mr-2">Chương sau</span>
+                        <i class="fa-solid fa-chevron-right icon-size-5"></i>
+                    </button>
+
+                    <button class="button-blue ml-2" mat-flat-button matTooltip="Thêm thành phần" type="button"
+                        matTooltip="Lưu">
+                        <i class="fa-solid fa-bookmark icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Lưu</span>
+                    </button>
+                </div>
+                <p-divider align="center" class="w-full">
+                    <div class="inline-flex align-items-center">
+                        <b class="text-2xl text-primary">Bình luận</b>
+                    </div>
+                </p-divider>
+                <app-comment class="w-full" [objecId]="id" [apiListComment]="ApiListComment"
+                    [apiSavecomment]="ApiSaveComment"></app-comment>
+            </div>
+
+            <div class="w-full p-4 flex flex-col items-center border-1 border-gray-300 rounded bg-white mb-2">
+                <p-divider align="center" class="w-full">
+                    <div class="inline-flex items-center">
+                        <b class="text-2xl text-primary">Sách nổi bật</b>
+                    </div>
+                </p-divider>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-3 gap-x-3 w-full min-w-0 p-6">
+                    <div *ngFor="let product of specialBook"
+                        class="flex flex-row md:flex-col md:justify-center items-center" style="margin: 0 auto">
+                        <img class="rounded-xl w-36 h-56 hover:cursor-pointer" alt="Card"
+                            [src]="ApiImage + product?.coverImage" [routerLink]="['../../detail', product.id]"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+<!-- Write comments -->
+<div class="flex flex-col mx-4 sm:mx-8 mt-6 mb-3">
+    <div class="flex items-start">
+        <img *ngIf="user?.avatar" class="w-12 h-12 rounded-full mr-5" [src]="ApiImage + user?.avatar" alt="Card cover image">
+        <mat-icon class="w-12 h-12 rounded-full mr-5"
+            *ngIf="!user?.avatar"
+            [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+        <form [formGroup]="sendMessageForm" (ngSubmit)="submit(sendMessageForm)" class="w-full">
+            <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+
+                <textarea #messageInput name="message" formControlName="message" class="form-control" matInput
+                    [placeholder]="'Write a comment...'" [rows]="3" matTextareaAutosize [required]="true"></textarea>
+                <button mat-icon-button (click)="op.toggle($event)" type="button">
+                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:emoji-happy'"></mat-icon>
+                </button>
+                <p-overlayPanel #op>
+                    <emoji-mart [showPreview]="false" (emojiClick)="addEmoji($event)" [isNative]="true"
+                        [showSingleCategory]="true" [emojiTooltip]="true"></emoji-mart>
+                </p-overlayPanel>
+            </mat-form-field>
+            <div class="flex mt-3 ml-auto" style="float: right;">
+                <button mat-flat-button color="primary" [tabIndex]="0" type="submit">
+                    <i class="fa-solid fa-paper-plane icon-size-5"></i>
+                    <span class="hidden md:inline-block ml-2">Gửi</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Comments -->
+<hr class="border-b mx-4 sm:mx-8 my-0">
+<div class="overflow-y-hidden">
+    <div class="relative flex flex-col mx-4 sm:mx-8 my-6 " *ngFor="let comment of commentTree?.slice(0, (pageNo + 1)*10)">
+        <div class="flex items-start">
+            <img *ngIf="comment?.avatar" class="w-8 h-8 rounded-full mr-4" [src]="ApiImage + comment.avatar" alt="Card cover image">
+            <mat-icon class="w-8 h-8 rounded-full mr-4"
+                *ngIf="!comment?.avatar"
+                [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            <div class="flex flex-col mt-0.5">
+                <span>
+                    <b>{{comment.createUser}}</b> {{comment.content}}
+                </span>
+                <div class="flex items-center text-sm text-secondary mt-2">
+                    <span class="mr-2 cursor-pointer hover:underline" (click)="comment.reply = !comment.reply">Reply</span>
+                    <span class="mr-2 cursor-pointer hover:underline" (click)="comment.hiddenChild = !comment.hiddenChild">{{comment.hiddenChild ? 'Show' : 'Hidden'}} replies</span>
+                    <span class="mr-2">&bull;</span>
+                    <span>{{comment.createDate | date: 'dd/MM/yyyy, h:mm a'}}</span>
+                </div>
+            </div>
+        </div>
+        <div [ngClass]="{'hidden': comment.hiddenChild }" class="flex items-start mt-8 ml-12" *ngFor="let child of comment.children">
+            <img class="w-8 h-8 rounded-full mr-4" [src]="ApiImage + child.avatar" alt="Card cover image">
+            <mat-icon class="w-8 h-8 rounded-full mr-4"
+                *ngIf="!comment?.avatar"
+                [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            <div class="flex flex-col mt-0.5">
+                <span>
+                    <b>{{child.createUser}}</b> {{child.content}}
+                </span>
+                <div class="flex items-center text-sm text-secondary mt-2">
+                    <span class="mr-2 cursor-pointer hover:underline" (click)="onReply(comment.id)">Reply</span>
+                    <span class="mr-2">&bull;</span>
+                    <span>{{child.createDate | date: 'dd/MM/yyyy, h:mm a'}}</span>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="comment.reply" class="flex items-start mt-8 ml-12">
+            <img *ngIf="user?.avatar" class="w-8 h-8 rounded-full mr-4" [src]="ApiImage + user?.avatar" alt="Card cover image">
+            <mat-icon class="w-8 h-8 rounded-full mr-4"
+                *ngIf="!user?.avatar"
+                [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+            <form #replyForm="ngForm" (ngSubmit)="submitFormReply(replyForm)" class="w-full">
+                <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+                    <textarea #reply name="message" [(ngModel)]="messageReply" class="form-control" matInput
+                        [placeholder]="'Write a comment...'" [rows]="3" matTextareaAutosize [required]="true"></textarea>
+                    <button mat-icon-button (click)="op1.toggle($event)" type="button">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:emoji-happy'"></mat-icon>
+                    </button>
+                    <p-overlayPanel #op1>
+                        <emoji-mart [showPreview]="false" (emojiClick)="addEmojiReply($event)" [isNative]="true"
+                            [showSingleCategory]="true" [emojiTooltip]="true"></emoji-mart>
+                    </p-overlayPanel>
+                </mat-form-field>
+                <div class="flex mt-3 ml-auto" style="float: right;">
+                    <button mat-flat-button color="primary" [tabIndex]="0" type="submit">
+                        <i class="fa-solid fa-paper-plane icon-size-5"></i>
+                        <span class="hidden md:inline-block ml-2">Gửi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="flex mt-3 w-full" style="float: right;">
+        <button class="w-full" mat-flat-button color="primary" [tabIndex]="0" type="button" (click)="pageNo = pageNo+1">
+            <i class="fa-solid fa-angles-down icon-size-5"></i>
+            <span class="hidden md:inline-block ml-2">Tải thêm bình luận</span>
+        </button>
+    </div>
+</div>

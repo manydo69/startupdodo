@@ -1,0 +1,202 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+        <div class="flex flex-0 items-center bg-white dark:bg-transparent">
+            <div class="ml-2 text-lg font-medium">
+                Thông tin báo cáo sách
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-hidden bg-gray-100 w-full h-full" cdkScrollable>
+        <!-- CONTENT GOES HERE -->
+        <!-- CONTENT GOES HERE -->
+        <form action="" class="h-full">
+            <div #main
+                class="border-1 border-gray-300 rounded bg-white p-4 h-full overflow-y-auto md:overflow-y-hidden">
+                <p-table *ngIf="deviceType == 'MOBILE'; else elseBlock" #book styleClass="p-datatable-gridlines"
+                    [value]="listBaoCao" [tableStyle]="{ 'width': '100%'}" [paginator]="true" [rows]="5"
+                    [showCurrentPageReport]="true" pageLinks="3"
+                    [currentPageReportTemplate]="'{currentPage} / {totalPages}'" [responsiveLayout]="'stack'"
+                    [breakpoint]="'768px'">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 4rem; min-width: 4rem; text-align: center;">STT</th>
+                            <th style="width: 15%; text-align: center;">Người báo cáo</th>
+                            <th style="width: 20%; text-align: center;">Sách</th>
+                            <th style="width: 20%; text-align: center;">Loại vi phạm</th>
+                            <th style="width: 45%; text-align: center;">Nội dung</th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">Ngày tạo</th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">Trạng thái</th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                Thao tác
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product let-index="rowIndex">
+                        <tr class="border-t border-blue-900">
+                            <td style="width: 4rem; min-width: 4rem; text-align: center;">
+                                <span class="p-column-title">STT</span>
+                                {{ index + 1 }}
+                            </td>
+                            <td style="width: 15%">
+                                <span class="p-column-title" style="word-break: break-word; text-wrap: wrap;">Người báo cáo</span>
+                                {{product.userName}}
+                            </td>
+                            <td style="width: 20%; text-align: center;">
+                                <span class="p-column-title">Sách</span>
+                                {{product.bookName}}
+                            </td>
+                            <td style="width: 20%; text-align: center;">
+                                <span class="p-column-title">Loại vi phạm</span>
+                                {{product.categoryName}}
+                            </td>
+                            <td style="width: 45%; text-align: center;" class="text-paragraph">
+                                <span class="p-column-title">Nội dung</span>
+                                {{product.content}}
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Ngày tạo</span>
+                                {{ product.createDate | date: 'dd/MM/yyyy'}}
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Trạng thái</span>
+                                <p-tag [value]="product.status" [severity]="getSeverity(product.status)"></p-tag>
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Thao tác</span>
+                                <div>
+                                    <button type="button" [routerLink]="['./update', product.book]" class="mr-2">
+                                        <i class="fa-solid fa-circle-info icon-size-5" style="color:green"
+                                            matTooltip="Xem thông tin"></i>
+                                    </button>
+                                    <button *ngIf="product.status == 'CHO_DUYET'" type="button"
+                                        (click)="onApproveBook(product)" class="mr-2">
+                                        <i class="fa-solid fa-clipboard-check icon-size-5" matTooltip="Phê duyệt"></i>
+                                    </button>
+                                    <button *ngIf="product.status != 'BAN' && product.status!= 'HOAN_THANH'" type="button"
+                                        (click)="onBanBook(product)" class="mr-2">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:red" matTooltip="Từ chối"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <ng-template #elseBlock>
+                    <p-table #book styleClass="p-datatable-gridlines" [value]="listBaoCao"
+                        [tableStyle]="{ 'width': '100%'}"
+                        [globalFilterFields]="['name', 'author', 'createDate', 'status', 'enabled']"
+                        [responsiveLayout]="'scroll'" [scrollable]="true" scrollHeight="{{main.offsetHeight - 35}}px">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 4rem; min-width: 4rem; text-align: center;">STT</th>
+                                <th style="width: 15%; text-align: center;">
+                                    <div class="flex items-center justify-center"
+                                        style="word-break: break-word; text-wrap: wrap;">
+                                        Người báo cáo
+                                        <p-columnFilter type="text" field="userName" display="menu"
+                                            matchMode="contains"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="width: 20%; text-align: center;">
+                                    Sách
+                                    <p-columnFilter type="text" field="bookName" display="menu"
+                                            matchMode="contains"></p-columnFilter>
+                                </th>
+                                <th style="width: 20%; text-align: center;">
+                                    <div class="flex items-center justify-center">
+                                        Loại vi phạm
+                                        <p-columnFilter type="text" field="categoryName" display="menu"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="width: 45%; text-align: center;">
+                                    <div class="flex items-center justify-center">
+                                        Nội dung
+                                        <p-columnFilter type="text" field="content" display="menu"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <div class="flex items-center justify-center">
+                                        Ngày tạo
+                                        <p-columnFilter type="date" field="createDate" display="menu"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <div class="flex items-center justify-center">
+                                        Trạng thái
+                                        <p-columnFilter field="status" matchMode="equals" display="menu">
+                                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                <p-dropdown name="statusFilter" [ngModel]="value" [options]="statuses"
+                                                    (onChange)="filter($event.value)" placeholder="Any">
+                                                    <ng-template let-option pTemplate="item">
+                                                        <p-tag [value]="option"
+                                                            [severity]="getSeverity(option)"></p-tag>
+                                                    </ng-template>
+                                                </p-dropdown>
+                                            </ng-template>
+                                        </p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    Thao tác
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product let-index="rowIndex">
+                            <tr class="border-t border-blue-900">
+                                <td style="width: 4rem; min-width: 4rem; text-align: center;">
+                                    <span class="p-column-title">STT</span>
+                                    {{ index + 1 }}
+                                </td>
+                                <td style="width: 15%">
+                                    <span class="p-column-title" style="word-break: break-word; text-wrap: wrap;">Người báo cáo</span>
+                                    {{product.userName}}
+                                </td>
+                                <td style="width: 20%; text-align: center;">
+                                    <span class="p-column-title">Sách</span>
+                                    {{product.bookName}}
+                                </td>
+                                <td style="width: 20%; text-align: center;">
+                                    <span class="p-column-title">Loại vi phạm</span>
+                                    {{product.categoryName}}
+                                </td>
+                                <td style="width: 45%; text-align: center;">
+                                    <span class="p-column-title">Nội dung</span>
+                                    {{product.content}}
+                                </td>
+                                <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <span class="p-column-title">Ngày tạo</span>
+                                    {{ product.createDate | date: 'dd/MM/yyyy'}}
+                                </td>
+                                <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <span class="p-column-title">Trạng thái</span>
+                                    <p-tag [value]="product.status" [severity]="getSeverity(product.status)"></p-tag>
+                                </td>
+                                <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <span class="p-column-title">Thao tác</span>
+                                    <div>
+                                        <button *ngIf="product.status != 'HOAN_THANH'" type="button" [routerLink]="['/sach/detail', product.book]" class="mr-2">
+                                            <i class="fa-solid fa-circle-info icon-size-5" style="color:green"
+                                                matTooltip="Xem thông tin"></i>
+                                        </button>
+                                        <button *ngIf="product.status == 'CHO_DUYET'" type="button"
+                                            (click)="onApproveReport(product)" class="mr-2">
+                                            <i class="fa-solid fa-clipboard-check icon-size-5" matTooltip="Phê duyệt"></i>
+                                        </button>
+                                        <button *ngIf="product.status != 'BAN' && product.status!= 'HOAN_THANH'" type="button"
+                                            (click)="onRefuseReport(product)" class="mr-2">
+                                            <i class="fa-solid fa-ban icon-size-5" style="color:red" matTooltip="Từ chối"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </ng-template>
+            </div>
+        </form>
+    </div>
+</div>

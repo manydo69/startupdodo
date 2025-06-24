@@ -1,0 +1,170 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+
+    <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+        <div class="flex flex-0 items-center bg-white dark:bg-transparent">
+            <div class="ml-2 text-lg font-medium">
+                Thông tin bài viết
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto sm:p-2 shadow overflow-y-hidden bg-gray-100 w-full h-full" cdkScrollable>
+        <!-- CONTENT GOES HERE -->
+        <form action="" class="h-full">
+            <div #main class="border-1 border-gray-300 rounded bg-white p-4 h-full overflow-y-auto md:overflow-y-hidden">
+                <p-table *ngIf="deviceType == 'MOBILE'; else elseBlock" #book styleClass="p-datatable-gridlines" [value]="listPost" [tableStyle]="{ 'width': '100%'}"
+                    [paginator]="true" [rows]="5" [showCurrentPageReport]="true" pageLinks="3" [currentPageReportTemplate]="'{currentPage} / {totalPages}'"
+                    [responsiveLayout]="'stack'" [breakpoint]="'768px'">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 4rem; text-align: center;">STT</th>
+                            <th style="width: 35%; text-align: center;">Tiêu đề bài viết</th>
+                            <th style="width: 30%; text-align: center;">Mô tả</th>
+                            <th style="width: 10rem; text-align: center;">Người tạo</th>
+                            <th style="width: 6rem; text-align: center;">Ngày tạo</th>
+                            <th style="width: 8rem; text-align: center;">Trạng thái</th>
+                            <th style="width: 6rem; text-align: center;">
+                                Thao tác
+                            </th>
+                        </tr>
+
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product let-index="rowIndex">
+                        <tr class="border-t border-blue-900">
+                            <td style="width: 4rem; min-width: 4rem; text-align: center;">
+                                <span class="p-column-title">STT</span>
+                                {{ index + 1 }}
+                            </td>
+                            <td style="width: 35%">
+                                <span class="p-column-title" style="word-break: break-word; text-wrap: wrap;">Tiêu đề bài viết</span>
+                                {{product.title}}
+                            </td>
+                            <td style="width: 30%; text-align: center;">
+                                <span class="p-column-title">Mô tả</span>
+                                {{product.description}}
+                            </td>
+                            <td style="width: 10rem; min-width: 10rem; text-align: center;">
+                                <span class="p-column-title">Người tạo</span>
+                                {{product.createUser}}
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Ngày tạo</span>
+                                {{ product.createDate | date: 'dd/MM/yyyy'}}
+                            </td>
+                            <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <span class="p-column-title">Trạng thái</span>
+                                <p-tag [value]="product.enabled ? 'Hoạt động' : 'Bị khóa' " [severity]="getSeverity(product.enabled)"></p-tag>
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Thao tác</span>
+                                <div>
+                                    <button type="button" class="mr-2" (click)="onInfoPost(product)">
+                                        <i class="fa-solid fa-circle-info icon-size-5" style="color:green" matTooltip="Xem thông tin"></i>
+                                    </button>
+                                    <button *ngIf="product.enabled" type="button" (click)="onBanPost(product)" class="mr-2">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:red" matTooltip="Chặn"></i>
+                                    </button>
+                                    <button *ngIf="!product.enabled" type="button" (click)="onUnBanPost(product)" class="">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:green" matTooltip="Bỏ chặn"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <ng-template #elseBlock>
+                    <p-table #book styleClass="p-datatable-gridlines" [value]="listPost" [tableStyle]="{ 'width': '100%'}"
+                    [globalFilterFields]="['name', 'author', 'createDate', 'status', 'enabled']"
+                    [responsiveLayout]="'scroll'" [scrollable]="true" scrollHeight="{{main.offsetHeight - 35}}px">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 4rem; min-width: 4rem; text-align: center;">STT</th>
+                            <th style="width: 35%; text-align: center;">
+                                <div class="flex items-center justify-center" style="word-break: break-word; text-wrap: wrap;">
+                                    Tiêu đề bài viết
+                                    <p-columnFilter type="text" field="name" display="menu" matchMode="contains"></p-columnFilter>
+                                </div>
+                            </th>
+                            <th style="width: 8rem; min-width: 8rem; text-align: center;">
+                                Mô tả
+                            </th>
+                            <th style="width: 10rem; min-width: 10rem; text-align: center;">
+                                <div class="flex items-center justify-center">
+                                    Người tạo
+                                    <p-columnFilter type="text" field="author" display="menu"></p-columnFilter>
+                                </div>
+                            </th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <div class="flex items-center justify-center">
+                                    Ngày tạo
+                                    <p-columnFilter type="date" field="createDate" display="menu"></p-columnFilter>
+                                </div>
+                            </th>
+                            <th style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <div class="flex items-center justify-center">
+                                    Trạng thái
+                                    <p-columnFilter field="status" matchMode="equals" display="menu">
+                                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                            <p-dropdown name="statusFilter" [ngModel]="value" [options]="'[true, false]'" (onChange)="filter($event.value)" placeholder="Any">
+                                                <ng-template let-option pTemplate="item">
+                                                    <p-tag [value]="option ? 'Hoạt động' : 'Bị khóa'" [severity]="getSeverity(option)"></p-tag>
+                                                </ng-template>
+                                            </p-dropdown>
+                                        </ng-template>
+                                    </p-columnFilter>
+                                </div>
+                            </th>
+                            <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                Thao tác
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product let-index="rowIndex">
+                        <tr class="border-t border-blue-900">
+                            <td style="width: 4rem; min-width: 4rem; text-align: center;">
+                                {{ index + 1 }}
+                            </td>
+                            <td style="width: 35%" style="word-break: break-word; text-wrap: wrap;">
+                                <span class="p-column-title">Tiêu đề bài viết</span>
+                                {{product.title}}
+                            </td>
+                            <td style="width: 30%; min-width: 30%; text-align: center;">
+                                <span class="p-column-title">Mô tả</span>
+                                {{product.description}}
+                            </td>
+                            <td style="width: 10rem; min-width: 10rem; text-align: center;">
+                                <span class="p-column-title">Người tạo</span>
+                                {{product.createUser}}
+                            </td>
+                            <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                <span class="p-column-title">Ngày tạo</span>
+                                {{ product.createDate | date: 'dd/MM/yyyy'}}
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <span class="p-column-title">Trạng thái</span>
+                                <p-tag [value]="product.enabled ? 'Hoạt động' : 'Bị khóa' " [severity]="getSeverity(product.enabled)"></p-tag>
+                            </td>
+                            <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                <div>
+                                    <button type="button" class="mr-2" (click)="onInfoPost(product)">
+                                        <i class="fa-solid fa-circle-info icon-size-5" style="color:green" matTooltip="Xem thông tin"></i>
+                                    </button>
+                                    <button *ngIf="product.enabled" type="button" (click)="onBanPost(product)" class="mr-2">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:red" matTooltip="Chặn"></i>
+                                    </button>
+                                    <button *ngIf="!product.enabled" type="button" (click)="onUnBanPost(product)" class="">
+                                        <i class="fa-solid fa-ban icon-size-5" style="color:green" matTooltip="Bỏ chặn"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                </ng-template>
+            </div>
+        </form>
+    </div>
+</div>

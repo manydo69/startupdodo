@@ -1,0 +1,32 @@
+<!-- <div class="flex flex-0 bg-transparent">
+    <div class="flex flex-0 justify-center items-center max-w-screen">
+        <i class="fa-solid fa-x icon-size-5" (click)="saveAndClose()"></i>
+    </div>
+</div> -->
+
+<div *ngIf="data.type == 'TRUYEN_CHU'" class="container">
+    <div class="flip-book" id="demoBookExample">
+        <div class="page page-cover page-cover-top" data-density="hard">
+            <div class="page-content">
+                <h2 class="uppercase">{{data.bookTitle}}</h2>
+            </div>
+        </div>
+        <div *ngFor="let para of textArray; index as i">
+            <div class="page">
+                <div class="page-content">
+                    <div class="page-text text-xl sm:text-3xl" [innerHTML]="para"></div>
+                    <div class="page-footer">{{i}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="page page-cover page-cover-bottom" data-density="hard">
+            <div class="page-content">
+                <h2>THE END</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="data.type == 'TRUYEN_TRANH'" class="container">
+    <div class="flip-book h-full" id="demoBookExample">
+    </div>
+</div>

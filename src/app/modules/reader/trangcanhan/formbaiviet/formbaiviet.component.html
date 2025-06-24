@@ -1,0 +1,55 @@
+<form #formBaiViet="ngForm" (submit)="formBaiViet.valid && saveAndClose()" class="flex flex-col max-w-310 md:min-w-310 overflow-hidden max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-12 px-3 sm:px-5 bg-primary text-on-primary">
+        <div class="w-full md:w-1/4 text-lg font-medium flex items-center">
+            <span class="w-full">Tạo bài viết</span>
+        </div>
+        <div class="w-1/4 flex justify-end">
+            <button *ngIf="!sourceData.isView" mat-icon-button style="margin-right: 8px;" [tabIndex]="0" type="submit">
+                <i class="fa-regular fa-circle-check icon-size-6"></i>
+            </button>
+            <button mat-icon-button [tabIndex]="-1" type="button" (click)="close()">
+                <i class="fa-regular fa-circle-xmark icon-size-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <div #mainns class="flex flex-col flex-auto h-modal overflow-y-auto">
+        <div class="w-full h-full min-w-0 p-6">
+            <div class="w-full flex flex-col" #dtdonvi>
+                <div class="w-full flex flex-col justify-center">
+                    <label for="title" class="block">Tiêu đề:</label>
+                    <input id="title" name="title" pInputText
+                        [(ngModel)]="sourceData.title" [required]="true" #title="ngModel" [disabled]="sourceData.isView"/>
+                    <small *ngIf="title?.errors?.['required']" id="title-help" class="p-error block">Hãy nhập tiêu đề bài viết.</small>
+                </div>
+                <div class="w-full flex flex-col justify-center">
+                    <label for="description" class="block">Mô tả:</label>
+                    <textarea id="description" name="description" rows="3" cols="30" class="w-full" pInputTextarea
+                    [(ngModel)]="sourceData.description" [required]="true" #description="ngModel" [disabled]="sourceData.isView"></textarea>
+                    <small *ngIf="description?.errors?.['required']" id="title-help" class="p-error block">Hãy nhập mô tả bài viết.</small>
+                </div>
+            </div>
+
+            <div *ngIf="!sourceData.isView" class="flex flex-col pt-2 h-full overflow-hidden">
+                <div class="mat-field-label mb-2">Nội dung:</div>
+                <quill-editor #editor
+                    name="qtcontac"
+                    [styles]="{ width: '100%', height: (mainns.offsetHeight) + 'px'}"
+                    [(ngModel)]="sourceData.content" [required]="true" #content="ngModel"> </quill-editor>
+                    <small *ngIf="content?.errors?.['required']" id="title-help" class="p-error block">Hãy nhập nội dung bài viết.</small>
+            </div>
+            <div *ngIf="sourceData.isView" class="flex flex-col pt-2 h-full overflow-hidden">
+                <div class="mat-field-label mb-2">Nội dung:</div>
+                <p class="overflow-y-auto" [styles]="{ width: '100%', height: (mainns.offsetHeight) + 'px'}" [innerHTML]="sourceData.content"></p>
+                <!-- <quill-editor #editor
+                    name="qtcontac"
+                    [styles]="{ width: '100%', height: (mainns.offsetHeight) + 'px'}"
+                    [(ngModel)]="sourceData.content" [required]="true" #content="ngModel"> </quill-editor>
+                    <small *ngIf="content?.errors?.['required']" id="title-help" class="p-error block">Hãy nhập nội dung bài viết.</small> -->
+            </div>
+        </div>
+
+    </div>
+</form>

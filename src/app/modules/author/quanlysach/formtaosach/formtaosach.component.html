@@ -1,0 +1,220 @@
+<form #form="ngForm" name="form" (submit)="save(form)">
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden bg-gray-100">
+    <!-- Header -->
+        <div class="flex flex-0 py-1 px-1 head-tool border-b bg-white dark:bg-transparent">
+            <div *ngIf="!this.id" class="flex flex-0 items-center bg-white dark:bg-transparent">
+                <!-- Back button -->
+                <a [routerLink]="['../']">
+                    <i class="pi pi-angle-left" style="font-size: 2rem"></i>
+                </a>
+                <div class="ml-2 text-lg font-medium">
+                    Tạo mới sách truyện
+                </div>
+            </div>
+            <div *ngIf="this.id" class="flex flex-0 items-center bg-white dark:bg-transparent">
+                <!-- Back button -->
+                <a [routerLink]="['../../']">
+                    <i class="pi pi-angle-left" style="font-size: 2rem"></i>
+                </a>
+                <div class="ml-2 text-lg font-medium">
+                    Cập nhật sách truyện
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div *ngIf="!this.id" class="flex items-center w-full justify-end h-toolbar">
+                <button mat-flat-button style="margin-right: 8px;" color="primary" [tabIndex]="0"
+                    type="submit" matTooltip="Lưu bản nháp">
+                    <i class="fa-solid fa-check icon-size-6"></i>
+                    <span class="hidden md:inline-block ml-2">Lưu</span>
+                </button>
+                <!-- <button mat-flat-button [tabIndex]="-1" class="button-blue" (click)="save()" matTooltip="Lưu và gửi">
+                <i class="fa-solid fa-share icon-size-6"></i>
+                <span class="hidden md:inline-block ml-2">Lưu và gửi</span>
+            </button> -->
+            </div>
+            <div *ngIf="this.id" class="flex items-center w-full justify-end h-toolbar">
+                <button mat-flat-button color="primary" [tabIndex]="0" type="submit"
+                    matTooltip="Lưu bản nháp">
+                    <i class="fa-solid fa-check icon-size-6"></i>
+                    <span class="hidden md:inline-block ml-2">Cập nhật</span>
+                </button>
+                <!-- <button *ngIf="data.status == 'DRAFT'" style="margin-left: 8px;" mat-flat-button [tabIndex]="-1" class="button-blue" (click)="save()" matTooltip="Lưu và gửi">
+                <i class="fa-solid fa-share icon-size-6"></i>
+                <span class="hidden md:inline-block ml-2">Cập nhật và gửi</span>
+            </button> -->
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-auto pt-2 sm:p-2 shadow overflow-y-auto bg-gray-100 w-full" cdkScrollable>
+            <!-- CONTENT GOES HERE -->
+
+            <!-- BOX 1-->
+            <div class="w-full h-auto p-4 flex border-1 border-gray-300 rounded bg-white">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 ml-0 w-full min-w-0 overflow-y-auto">
+                    <div class="flex flex-col justify-center">
+                        <label for="name" class="block">Tên sách, truyện:</label>
+                        <input id="name" name="name" type="username" aria-describedby="name-help" pInputText
+                            [(ngModel)]="data.name" [required]="true" />
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <label for="author" class="block">Tên tác giả:</label>
+                        <input id="author" name="author" type="username" aria-describedby="author-help" pInputText
+                            [(ngModel)]="data.author" [required]="true" />
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <label for="topic">Thể loại:</label>
+                        <p-multiSelect [style]="{ width: '100%'}" optionLabel="name" optionValue="id" id="topic"
+                            name="topic" [options]="listTopic" appendTo="body" [filter]="true" filterBy="name"
+                            placeholder="&nbsp;" [(ngModel)]="data.listTopic">
+                        </p-multiSelect>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="pr-2">Trạng thái:</label>
+                        <p-dropdown
+                            [style]="{ width: '100%'}" name="status" [(ngModel)]="data.status"
+                            [options]="statuses" appendTo="body" optionLabel="name" optionValue="name"
+                            optionDisabled="disable">
+                            <ng-template let-option pTemplate="item">
+                                <p-tag [value]="option.name" [severity]="getSeverityBook(option.name)"></p-tag>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full h-auto p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div class="w-full">
+                    <div class="flex flex-col justify-center">
+                        <label for="description">Mô tả:</label>
+                        <textarea id="description" name="description" rows="5" cols="30" class="w-full" pInputTextarea
+                            [(ngModel)]="data.description"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full h-auto p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div class="w-full">
+                    <div class="flex flex-col justify-center">
+                        <label for="coinCost" class="block">Giá tiền (coin):</label>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-solid fa-coins"></i></span>
+                            <p-inputNumber id="coinCost" name="coinCost" type="coinCost" aria-describedby="coinCost-help"
+                                [(ngModel)]="data.coinCost" [required]="true" [min]="0"></p-inputNumber>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOX 1-->
+            <div class="w-full p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 ml-0 w-full min-w-0 overflow-y-auto">
+                    <div class="flex flex-col justify-center col-span-2">
+                        <div class="flex gap-x-2">
+                            <div class="flex flex-col">
+                                <label>Ảnh bìa:</label>
+                                <app-imageview *ngIf="data.coverImage" [source]="ApiImage + data.coverImage"
+                                    [type]="'url'" [width]="'75'" [height]="'100'"></app-imageview>
+                                <app-imageview *ngIf="!data.coverImage" [type]="'url'" [width]="'75'"
+                                    [height]="'100'"></app-imageview>
+                            </div>
+                            <div class="flex flex-col">
+                                <label>Ảnh mới:</label>
+                                <app-imageview *ngIf="coverImageShow" [source]="coverImageShow" [type]="'base64'"
+                                    [width]="'75'" [height]="'100'"></app-imageview>
+                                <app-imageview *ngIf="!coverImageShow" [type]="'base64'" [width]="'75'"
+                                    [height]="'100'"></app-imageview>
+                            </div>
+                        </div>
+                        <p-fileUpload #fileForm accept="image/*" class="w-full text-base" chooseLabel="Chọn"
+                            cancelLabel="Hủy" [customUpload]="true" (onClear)="removeAllFiles($event)"
+                            maxFileSize="10485760" (onSelect)="myUploader($event, fileForm)"
+                            invalidFileSizeMessageSummary=""
+                            invalidFileSizeMessageDetail='File Size không được quá 10 MB'>
+                            <ng-template let-file pTemplate="file">
+                                <div class="flex items-center justify-between w-full md:w-auto mt-2">
+                                    <div class="fuse-mat-no-subscript w-2/5">
+                                        <div class="mat-field-label truncate ">{{file.name}}</div>
+                                    </div>
+
+                                    <div class="fuse-mat-no-subscript w-1/5">
+                                        <div class="mat-field-label ">{{file.size}} bytes</div>
+                                    </div>
+
+                                    <div class="flex justify-end w-1/5">
+                                        <!-- <p-button icon="pi pi-times" (click)></p-button> -->
+                                        <button pButton icon="pi pi-times" type="button"
+                                            (click)="removeFile(file, fileForm, $event)"></button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOX 1-->
+            <div class="w-full p-4 flex border-1 border-gray-300 rounded bg-white mt-2">
+                <div #main class="edit-table w-full">
+                    <p-table styleClass="p-datatable-gridlines" [value]="data.listChapter" dataKey="id"
+                        [tableStyle]="{ width: '100%' }" responsiveLayout="stack" [breakpoint]="'960px'"
+                        [scrollable]="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <!-- <th style="width: 5%"></th> -->
+                                <th style="width: 4rem; text-align: center;">STT</th>
+                                <th style="width: 65%; text-align: center;">Tên chương</th>
+                                <th style="width: 35%; text-align: center;">Mức giá</th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">Ngày tạo</th>
+                                <th style="width: 8rem; min-width: 8rem; text-align: center;">Trạng thái</th>
+                                <th style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <button mat-icon-button (click)="addThanhPhan()" matTooltip="Thêm thành phần" type="button">
+                                        <i class="fa-solid fa-circle-plus icon-size-5"></i>
+                                    </button>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product let-index="rowIndex">
+                            <tr [pReorderableRow]="index">
+                                <!-- <td style="width: 5%">
+                                    <span class="pi pi-bars" pReorderableRowHandle></span>
+                                </td> -->
+                                <td style="width: 4rem; text-align: center;" [pReorderableRowHandle]="index">{{ product.order }}
+                                </td>
+                                <td style="width: 65%">
+                                    <input [name]="'chapterName'+index" class="w-full" type="text" pInputText
+                                        [(ngModel)]="product.name" />
+                                </td>
+                                <td style="text-align: center">
+                                    <span *ngIf="index == 0; else elseBlock">Miễn phí</span>
+                                    <ng-template #elseBlock>
+                                        <input [name]="'coinCost'+index" class="w-full" type="number" pInputText [min]="0"
+                                            [(ngModel)]="product.coinCost" />
+                                    </ng-template>
+                                </td>
+                                <td style="width: 6rem;min-width: 6rem; text-align: center;">{{ product.createDate | date: 'dd/MM/yyyy'
+                                    }}</td>
+                                <td style="width: 8rem; min-width: 8rem; text-align: center;">
+                                    <button [disabled]="product.status=='BAN'" type="button" (click)="onChangeStatus(product)">
+                                        <p-tag [value]="product.status"
+                                            [severity]="getSeverity(product.status)">
+                                        </p-tag>
+                                    </button>
+                                </td>
+                                <td style="width: 6rem; min-width: 6rem; text-align: center;">
+                                    <button type="button" (click)="onRowEditInit(product, index)" class="mr-2">
+                                        <i class="pi pi-file-edit" style="font-size: 1.5rem" matTooltip="Sửa"></i>
+                                    </button>
+                                    <button type="button" (click)="onRowDeleteInit(product)" class="">
+                                        <i class="pi pi-times" style="font-size: 1.5rem" matTooltip="Xóa"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
